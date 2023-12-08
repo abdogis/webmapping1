@@ -1,0 +1,215 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>Application</title>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+	  
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.20/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.20/"></script>
+
+    <script>
+      require(["esri/Map", "esri/layers/GeoJSONLayer", "esri/views/MapView","esri/widgets/Expand",
+        "esri/widgets/BasemapGallery", "esri/widgets/LayerList","esri/widgets/Legend", "esri/WebMap","esri/PopupTemplate"], (
+        Map,
+        GeoJSONLayer,
+        MapView,
+		Expand,
+		BasemapGallery,
+		LayerList,
+		 Legend,
+		 WebMap,
+		 PopupTemplate
+      ) => {
+        
+        const url =
+          "http://localhost/arcgispaijs/data/usa.geojson";
+		  
+		  const url2 =
+          "http://localhost/arcgispaijs/data/usa2.geojson";
+		 
+      
+
+        const template = {
+        title: "Information :",
+        content: "<ul><li><Name : {NAME} </li> <li> STATE : {STATE} </li> <li> CENSUSAREA : {CENSUSAREA} </li></ul>",
+		
+        fieldInfos: [
+          {
+            fieldName: 'NAME'
+            
+          }
+        ]
+      };
+	  
+	   const template2 = {
+        title: "Information :",
+        content: "<ul><li>ste_name : {ste_name} </li> <li> coty_name : {coty_name} </li> <li> coty_fp_code : {coty_fp_code} </li></ul>",
+		
+        fieldInfos: [
+          {
+            fieldName: 'NAME'
+            
+          }
+        ]
+      };
+
+      const renderer = {
+          type: "simple",
+          field: "NAME",
+		  label:"usa",
+            
+             
+          symbol: {
+            type: "simple-fill",
+            color: "green",
+            outline: {
+              color: "black"
+            }
+          },
+          
+        };
+		
+		
+	
+		 const renderer2 = {
+		 type: "simple",
+          field: "ste_name",
+		   label:"usa2",
+          symbol: {
+           type: "simple-line",
+              color: "blue",
+              style: "solid"
+          }
+        };
+
+       const geojsonLayer = new GeoJSONLayer({
+          url: url,
+		   title: "usa",
+		  // label: "Parcelles";
+          copyright: "USGS Earthquakes",
+          popupTemplate: template,
+          renderer: renderer //optional
+        });
+
+	const geojsonLayer2 = new GeoJSONLayer({
+          url: url2,
+		   title: "usa2",
+          copyright: "USGS Earthquakes",
+          popupTemplate: template2,
+          renderer: renderer2 //optional
+        });
+
+        const map = new Map({
+          basemap: "satellite",
+          layers: [geojsonLayer,geojsonLayer2]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          center: [-105.80, 44.40],
+          zoom: 3,
+          map: map
+        });
+		//--------------------------------------
+		 // Create a BasemapGallery widget instance and set
+        // its container to a div element
+
+        var basemapGallery = new BasemapGallery({
+          view: view,
+          container: document.createElement("div")
+        });
+
+        // Create an Expand instance and set the content
+        // property to the DOM node of the basemap gallery widget
+        // Use an Esri icon font to represent the content inside
+        // of the Expand widget
+
+        var bgExpand = new Expand({
+          view: view,
+          content: basemapGallery
+        });
+		
+		
+
+        // close the expand whenever a basemap is selected
+        basemapGallery.watch("activeBasemap", function () {
+          var mobileSize =
+            view.heightBreakpoint === "xsmall" ||
+            view.widthBreakpoint === "xsmall";
+
+          if (mobileSize) {
+            bgExpand.collapse();
+          }
+        });
+
+        // Add the expand instance to the ui
+
+        view.ui.add(bgExpand, "top-right");
+		
+		//-------------------
+		 view.when(function () {
+          var layerList = new LayerList({
+            view: view
+          });
+		 
+          // Add widget to the top right corner of the view
+          view.ui.add(layerList, "bottom-right");
+        
+		
+		//----------Legende-------------
+		
+		var legend = new Legend({
+            view: view,
+            container: document.createElement("div")
+          });
+		  
+		var bgExpandLegende = new Expand({
+          view: view,
+          content: legend
+        });
+		
+		 // close the expand whenever a basemap is selected
+        legend.watch("activeBasemap", function () {
+          var mobileSize =
+            view.heightBreakpoint === "xsmall" ||
+            view.widthBreakpoint === "xsmall";
+
+          if (mobileSize) {
+            bgExpand.collapse();
+			
+          }
+        });
+	
+
+          // Add widget to the bottom right corner of the view
+        //  view.ui.add(legend, "bottom-right");
+		  view.ui.add(bgExpandLegende, "bottom-left");
+        	});
+		//
+      });
+	  
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>
