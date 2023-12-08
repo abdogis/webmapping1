@@ -1,4 +1,7 @@
 #Webmapping USA
 
-![Uploading usa map.PNG…]()
 
+![usa_map](https://github.com/abdogis/webmapping1/assets/17854013/bd43e3e4-07c4-4b72-ad7d-5562b464a9f6)
+
+fdgdfgdfgdfgfdg
+dfgdfgdfgdfg
